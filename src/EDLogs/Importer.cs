@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using System.Diagnostics;
 
 namespace EDLogs
 {
@@ -16,6 +17,7 @@ namespace EDLogs
 
         public void ImportLogs()
         {
+            var sw = Stopwatch.StartNew();
             if (!Directory.Exists(_logPath))
             {
                 _logger.Error("Log directory does not exist.");
@@ -38,6 +40,9 @@ namespace EDLogs
                     _logger.Error("Error importing log file {LogFile}: {ErrorMessage}", logFile, ex.Message);
                 }
             }
+
+            sw.Stop();
+            _logger.Information("Import process completed in {ElapsedTime} ms.", sw.ElapsedMilliseconds);   
         }
     }
 }

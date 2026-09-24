@@ -1,4 +1,11 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/data/" />
+  <Folder Name="/Solution Items/data/Spansh/">
+    <File Path="../data/Spansh/OrionNebula.url" />
+  </Folder>
   <Project Path="AppSettings/AppSettings.csproj" Id="72e662ac-b45e-40a4-a5fd-d2737deea611" />
   <Project Path="EDLogs/EDLogs.csproj" Id="b73cd221-91b0-4d9b-96f7-1919cf9e3fc4" />
   <Project Path="Voyager/Voyager.csproj" Id="795fe438-37a2-4add-b26b-45058db9ab9a" />
