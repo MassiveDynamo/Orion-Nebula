@@ -1,11 +1,19 @@
 ﻿namespace AppSettings
 {
-    public partial class Settings(string? dataFolder, string? dbConnection, bool showProgress)
+    public class Settings
     {
-        public string DataFolder { get; set; } = dataFolder ?? string.Empty;
+        // Parameterless ctor required by the configuration binder
+        public Settings() {}
 
-        public string DbConnection { get; set; } = dbConnection ?? string.Empty;
+        // Properties must be settable so configuration.Bind can populate them
+        public string DataFolder { get; set; }
+        public string DbConnection { get; set; }
+        public bool ShowProgress { get; set; }
 
-        public bool ShowProgress { get; set; } = showProgress;
+        // Bulk processing tuning
+        public string? BulkWorkerCount { get; set; }
+        public string? BulkBatchSize { get; set; }
+
+        // other properties...
     }
 }
