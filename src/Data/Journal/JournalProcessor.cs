@@ -1,12 +1,6 @@
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using Data.Models;
+using System.Text.Json;
+using System.Threading.Channels;
 
 namespace Data.Journal
 {
@@ -23,10 +17,18 @@ namespace Data.Journal
         private const int DefaultBatchSize = 500;
         private const int ChannelCapacity = 10000;
 
-        public static async Task ProcessFileAsync(string path, Func<List<object>, Task> storeBatchAsync,
-            Func<List<object>, Exception, string, Task>? handleFailedBatch = null,
-            int workerCount = DefaultWorkerCount, int batchSize = DefaultBatchSize,
-            CancellationToken cancellation = default)
+        public static async Task ProcessFileAsync(
+            string path,
+            Func<List<object>,
+            Task> storeBatchAsync,
+            Func<List<object>,
+            Exception,
+            string,
+            Task>? handleFailedBatch = null,
+            int workerCount = DefaultWorkerCount,
+            int batchSize = DefaultBatchSize,
+            CancellationToken cancellation = default
+            )
         {
             var channel = Channel.CreateBounded<string>(new BoundedChannelOptions(ChannelCapacity)
             {
@@ -58,9 +60,10 @@ namespace Data.Journal
             using var sr = new StreamReader(fs);
 
             string? line;
-            while ((line = await sr.ReadLineAsync().ConfigureAwait(false)) != null)
+            while ((line = await sr.ReadLineAsync(cancellation).ConfigureAwait(false)) != null)
             {
                 cancellation.ThrowIfCancellationRequested();
+
                 // Wait when channel is full
                 await writer.WriteAsync(line, cancellation).ConfigureAwait(false);
             }
@@ -172,8 +175,7 @@ namespace Data.Journal
                             JumpDist = dto.JumpDist,
                             FuelUsed = dto.FuelUsed,
                             FuelLevel = dto.FuelLevel,
-                            StarClass = dto.StarClass,
-                            RawJson = json
+                            StarClass = dto.StarClass
                         };
                         return model;
                     }
@@ -186,10 +188,6 @@ namespace Data.Journal
                     try
                     {
                         var model = JsonSerializer.Deserialize<FSSAllBodiesFound>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                        if (model != null)
-                        {
-                            model.RawJson = json;
-                        }
                         return model;
                     }
                     catch

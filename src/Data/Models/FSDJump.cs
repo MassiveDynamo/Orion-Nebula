@@ -1,6 +1,5 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Models
 {
@@ -73,9 +72,6 @@ namespace Data.Models
 
         [MaxLength(50)]
         public string? StarClass { get; set; }
-
-        // Store raw JSON payload for fidelity
-        public string RawJson { get; set; } = string.Empty;
 
         // Parameterless ctor
         public FSDJump() { }

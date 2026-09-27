@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Data;
+﻿using Data;
 using Data.Journal;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.Diagnostics;
 

@@ -1,11 +1,10 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Models
 {
     [Index(nameof(SystemAddress))]
-    [Index(nameof(StarSystem))]
+    [Index(nameof(SystemName))]
     public class FSSAllBodiesFound
     {
         [Key]
@@ -18,7 +17,7 @@ namespace Data.Models
         public string Event { get; set; } = string.Empty;
 
         [MaxLength(200)]
-        public string StarSystem { get; set; } = string.Empty;
+        public string SystemName { get; set; } = string.Empty;
 
         public long? SystemAddress { get; set; }
 
@@ -30,9 +29,6 @@ namespace Data.Models
 
         // Optionally include scan duration or scan type if present
         public double? ScanTime { get; set; }
-
-        // Store raw JSON payload
-        public string RawJson { get; set; } = string.Empty;
 
         public FSSAllBodiesFound() { }
     }

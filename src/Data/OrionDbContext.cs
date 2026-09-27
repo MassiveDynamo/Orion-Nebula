@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Data
 {
@@ -97,10 +96,6 @@ namespace Data
                     .HasMaxLength(50)
                     .HasColumnType("nvarchar(50)");
 
-                entity.Property(e => e.RawJson)
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
-
                 entity.Property(e => e.Conflicts)
                     .HasColumnType("nvarchar(max)");
 
@@ -143,7 +138,7 @@ namespace Data
                     .HasMaxLength(200)
                     .HasColumnType("nvarchar(200)");
 
-                entity.Property(e => e.StarSystem)
+                entity.Property(e => e.SystemName)
                     .IsRequired()
                     .HasMaxLength(200)
                     .HasColumnType("nvarchar(200)");
@@ -157,11 +152,7 @@ namespace Data
 
                 entity.Property(e => e.ScanTime).HasColumnType("float");
 
-                entity.Property(e => e.RawJson)
-                    .IsRequired()
-                    .HasColumnType("nvarchar(max)");
-
-                entity.HasIndex(e => e.StarSystem).HasDatabaseName("IX_FSSAllBodiesFound_StarSystem");
+                entity.HasIndex(e => e.SystemName).HasDatabaseName("IX_FSSAllBodiesFound_SystemName");
                 entity.HasIndex(e => e.SystemAddress).HasDatabaseName("IX_FSSAllBodiesFound_SystemAddress");
             });
 

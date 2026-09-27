@@ -65,8 +65,7 @@ namespace Data.Journal
                     JumpDist = dto.JumpDist,
                     FuelUsed = dto.FuelUsed,
                     FuelLevel = dto.FuelLevel,
-                    StarClass = dto.StarClass,
-                    RawJson = json
+                    StarClass = dto.StarClass
                 };
 
                 return model;

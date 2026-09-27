@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using EFCore.BulkExtensions;
 
 namespace Data.Journal
@@ -54,17 +54,74 @@ namespace Data.Journal
                         var sw = System.Diagnostics.Stopwatch.StartNew();
 
                         // Use EFCore.BulkExtensions generic API to invoke BulkInsertAsync<T>
+                        // Match a BulkInsertAsync overload that starts with (DbContext, IEnumerable<T>, ..., CancellationToken)
                         var method = typeof(DbContextBulkExtensions).GetMethods()
-                            .FirstOrDefault(m => m.Name == "BulkInsertAsync" && m.IsGenericMethodDefinition && m.GetParameters().Length >= 2);
+                            .FirstOrDefault(m =>
+                                m.Name == "BulkInsertAsync"
+                                && m.IsGenericMethodDefinition
+                                && m.GetParameters().Length >= 2
+                                && m.GetParameters()[0].ParameterType == typeof(DbContext)
+                                && m.GetParameters()[1].ParameterType.IsGenericType
+                                && (m.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(IList<>)
+                                    || m.GetParameters()[1].ParameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                && m.GetParameters().Last().ParameterType == typeof(CancellationToken)
+                            );
 
                         if (method != null)
                         {
+                            // Debug: log selected method and parameter types to ensure correct overload
+                            try
+                            {
+                                var paramTypes = method.GetParameters().Select(p => p.ParameterType.FullName).ToArray();
+                                _logger.Debug("Selected BulkInsertAsync method: {Method}; Params: {Params}", method, paramTypes);
+                            }
+                            catch (Exception logEx)
+                            {
+                                _logger.Warning(logEx, "Failed to log BulkInsertAsync method info");
+                            }
+
                             var generic = method.MakeGenericMethod(type);
-                            var task = (Task)generic.Invoke(null, new object[] { context, list, BulkConfig, cancellation })!;
+                            var parameters = method.GetParameters();
+                            var args = new List<object?> { context, list };
+
+                            // third parameter may be BulkConfig or Action<BulkConfig>
+                            if (parameters.Length >= 3)
+                            {
+                                var p2 = parameters[2].ParameterType;
+                                if (p2 == typeof(BulkConfig) || p2.IsAssignableFrom(typeof(BulkConfig))) args.Add(BulkConfig);
+                                else args.Add((Action<BulkConfig>?)null);
+                            }
+
+                            // fourth parameter may be Action<decimal> (progress)
+                            if (parameters.Length >= 4)
+                            {
+                                var p3 = parameters[3].ParameterType;
+                                if (p3 == typeof(Action<decimal>) || p3.IsAssignableFrom(typeof(Action<decimal>))) args.Add((Action<decimal>?)null);
+                                else args.Add(null);
+                            }
+
+                            // fifth parameter may be Type
+                            if (parameters.Length >= 5)
+                            {
+                                var p4 = parameters[4].ParameterType;
+                                if (p4 == typeof(Type) || p4.IsAssignableFrom(typeof(Type))) args.Add((Type?)null);
+                                else args.Add(null);
+                            }
+
+                            // last parameter is CancellationToken
+                            args.Add(cancellation);
+
+                            var task = (Task)generic.Invoke(null, args.ToArray())!;
                             await task.ConfigureAwait(false);
                         }
                         else
                         {
+                            _logger.Warning("BulkInsertAsync overload not found; falling back to AddRange/SaveChanges. Available overloads: {Overloads}",
+                                typeof(DbContextBulkExtensions).GetMethods()
+                                    .Where(m => m.Name == "BulkInsertAsync")
+                                    .Select(m => m.ToString())
+                                    .ToArray());
+
                             // Fallback: AddRange + SaveChanges
                             context.AddRange(list.Cast<object>());
                             await context.SaveChangesAsync(cancellation).ConfigureAwait(false);
