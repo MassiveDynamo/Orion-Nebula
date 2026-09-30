@@ -37,6 +37,10 @@ The project is built using C# and .NET 10.0, and it uses Entity Framework Core/M
   ```powershell
   dotnet build
   ```
+- Create the database:
+  ```powershell
+  dotnet ef database update
+  ```
 - run the tests:
   ```powershell
   dotnet test

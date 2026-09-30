@@ -1,5 +1,7 @@
 ﻿using Data;
 using Data.Journal;
+using Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Diagnostics;
 
@@ -10,7 +12,7 @@ namespace EDLogs
         private string _logPath;
         private AppSettings.Settings _appSettings;
         private ILogger _logger;
-        private readonly OrionDbContext dbContext;
+        private readonly OrionDbContext _dbContext;
         private readonly JournalBulkStore _bulkStore;
         private readonly FailedBatchStore _failedBatchStore;
 
@@ -19,9 +21,97 @@ namespace EDLogs
             _logPath = Environment.GetEnvironmentVariable("USERPROFILE") + @"\Saved Games\Frontier Developments\Elite Dangerous";
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _bulkStore = bulkStore ?? throw new ArgumentNullException(nameof(bulkStore));
             _failedBatchStore = failedBatchStore ?? throw new ArgumentNullException(nameof(failedBatchStore));
+        }
+
+        public void ImportOrionNebulaSystems()
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                // Get the solution root folder
+                var solutionRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+                var nebulaDirectory = Path.Combine(solutionRoot, "Data", "Spansh");
+                var systems = GetOrionNebulaSystems(nebulaDirectory);
+
+                // 1) get existing names from DB (no tracking)
+                var existingNames = new HashSet<string>(
+                    _dbContext.EDSystemName
+                        .AsNoTracking()
+                        .Select(e => e.Name)
+                        .ToList(),
+                    StringComparer.OrdinalIgnoreCase // adjust comparer to DB collation if needed
+                );
+
+                _logger.Information("Found {ExistingCount} existing Orion Nebula systems in the database.", existingNames.Count);
+
+                // 2) also exclude entities already tracked in this DbContext (if DbContext is long-lived)
+                var trackedNames = new HashSet<string>(
+                    _dbContext.ChangeTracker
+                        .Entries<EDSystemName>()
+                        .Select(e => e.Entity.Name),
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+                // 3) dedupe input and filter
+                var newSystems = systems
+                    .GroupBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+                    .Select(g => g.First())
+                    .Where(s => !existingNames.Contains(s.Name) && !trackedNames.Contains(s.Name))
+                    .ToArray();
+
+                // 4) add only missing systems
+                if (newSystems.Length > 0)
+                {
+                    _dbContext.EDSystemName.AddRange(newSystems);
+                    _dbContext.SaveChanges();
+                }
+
+                _logger.Information("Imported {SystemCount} Orion Nebula systems.", newSystems.Length);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error importing Orion Nebula systems: {ErrorMessage}", ex.Message);
+            }
+            finally
+            {
+                sw.Stop();
+                _logger.Information("Orion Nebula import process completed in {ElapsedTime} ms.", sw.ElapsedMilliseconds);
+            }
+        }
+
+        private EDSystemName[] GetOrionNebulaSystems(string nebulaDirectory)
+        {
+            _logger.Information("Import Orion Nebula systems from the csv files in the Spansh directory");
+            if(!Directory.Exists(nebulaDirectory))
+            {
+                _logger.Error("Spansh directory does not exist: {NebulaDirectory}. Please check the directory path.", nebulaDirectory);
+                return Array.Empty<EDSystemName>();
+            }
+
+            var systems = new List<EDSystemName>();
+            var csvFiles = Directory.GetFiles(nebulaDirectory, "*.csv", SearchOption.AllDirectories);
+            foreach (var csvFile in csvFiles)
+            {
+                // First line of the csv file is the header, so skip it
+                var lines = File.ReadAllLines(csvFile);
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    var columns = lines[i].Split(',');
+                    if (columns.Length >= 2)
+                    {
+                        var systemName = columns[0].Trim();
+                        systems.Add(new EDSystemName
+                        {
+                            Name = systemName
+                        });
+                    }
+                }
+            }
+
+            return systems.ToArray();
         }
 
         public async Task ImportLogsAsync()
@@ -36,6 +126,18 @@ namespace EDLogs
             var logFiles = Directory.GetFiles(_logPath, "*.log", SearchOption.AllDirectories);
             _logger.Information("Found {LogCount} log files.", logFiles.Length);
             var failedStore = _failedBatchStore;
+
+            // Get the latest FSDJump event timestamp from the database to avoid re-importing old logs
+            var latestFSDJumpTimestamp = await _dbContext.FSDJump
+                .AsNoTracking()
+                .OrderByDescending(f => f.Timestamp)
+                .Select(f => (DateTime?)f.Timestamp)
+                .FirstOrDefaultAsync() ?? DateTime.MinValue;
+
+            // Filter log files to only include those modified after the latest FSDJump event timestamp
+            // TODO
+            logFiles = logFiles.Where(logFile => File.GetLastWriteTimeUtc(logFile) > latestFSDJumpTimestamp).ToArray();
+            _logger.Information("Filtered to {LogCount} log files after {LatestFSDJumpTimestamp}.", logFiles.Length, latestFSDJumpTimestamp);
 
             foreach (var logFile in logFiles)
             {
@@ -62,9 +164,7 @@ namespace EDLogs
 
                     var wc = workerCount > 0 ? workerCount : Environment.ProcessorCount;
                     var bs = batchSize > 0 ? batchSize : 1000;
-
                     await JournalProcessor.ProcessFileAsync(logFile, storeBatchAsync, failureHandler, wc, bs);
-
                     _logger.Information("Imported log file: {LogFile}", logFile);
                 }
                 catch (Exception ex)

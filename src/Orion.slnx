@@ -5,6 +5,10 @@
   <Folder Name="/Solution Items/data/" />
   <Folder Name="/Solution Items/data/Spansh/">
     <File Path="../data/Spansh/OrionNebula.url" />
+    <File Path="../data/Spansh/systems-search-17AAB64C-B5E2-11F1-BECA-B94D1B038B99-1.csv" />
+    <File Path="../data/Spansh/systems-search-17AAB64C-B5E2-11F1-BECA-B94D1B038B99-2.csv" />
+    <File Path="../data/Spansh/systems-search-17AAB64C-B5E2-11F1-BECA-B94D1B038B99-3.csv" />
+    <File Path="../data/Spansh/systems-search-17AAB64C-B5E2-11F1-BECA-B94D1B038B99-4.csv" />
   </Folder>
   <Project Path="AppSettings/AppSettings.csproj" Id="72e662ac-b45e-40a4-a5fd-d2737deea611" />
   <Project Path="Data/Data.csproj" Id="f03318ad-1830-41ad-889c-80cee5804b51" />

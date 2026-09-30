@@ -27,7 +27,6 @@ namespace Voyager
 
             // Build provider after all registrations
             var serviceProvider = services.BuildServiceProvider();
-
             var logger = serviceProvider.GetRequiredService<ILogger>();
             var appSettings = serviceProvider.GetRequiredService<AppSettings.Settings>();
             var dbContext = serviceProvider.GetRequiredService<OrionDbContext>();
@@ -71,6 +70,7 @@ namespace Voyager
                 var bulkStore = serviceProvider.GetRequiredService<Data.Journal.JournalBulkStore>();
                 var failedStore = serviceProvider.GetRequiredService<Data.Journal.FailedBatchStore>();
                 var importer = new EDLogs.Importer(logger, appSettings, dbContext, bulkStore, failedStore);
+                importer.ImportOrionNebulaSystems();
                 importer.ImportLogsAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)

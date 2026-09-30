@@ -26,10 +26,6 @@ namespace Data
         // Failed batches persisted for replay and debugging
         public DbSet<Data.Models.FailedBatch> FailedBatch { get; set; }
 
-        // public DbSet<EDSystem> EDSystem { get; set; }
-
-        // public DbSet<EDStation> Stations { get; set; }
-
         public OrionDbContext() : base()
         {
             SavingChanges += (sender, e) =>
