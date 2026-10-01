@@ -30,6 +30,7 @@ namespace Voyager
             var logger = serviceProvider.GetRequiredService<ILogger>();
             var appSettings = serviceProvider.GetRequiredService<AppSettings.Settings>();
             var dbContext = serviceProvider.GetRequiredService<OrionDbContext>();
+            var report = serviceProvider.GetRequiredService<ReportGenerator>();
             if (dbContext == null)
             {
                 logger.Error("DbContext is null");
@@ -72,6 +73,10 @@ namespace Voyager
                 var importer = new EDLogs.Importer(logger, appSettings, dbContext, bulkStore, failedStore);
                 importer.ImportOrionNebulaSystems();
                 importer.ImportLogsAsync().GetAwaiter().GetResult();
+
+                // Create a HTML report showing the current progress of visited systems vs the total number of systems in the Orion Nebula
+                ReportGenerator.GenerateReport(logger, dbContext, appSettings.DataFolder);
+
             }
             catch (Exception ex)
             {
@@ -84,7 +89,6 @@ namespace Voyager
 
         private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            bool.TryParse(configuration["ShowProgress"], out bool showProgress);
             services.AddSingleton<ILogger>(new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger());
@@ -104,9 +108,7 @@ namespace Voyager
             // Bind BulkConfig from configuration and register JournalBulkStore wired to a context factory
             var bulkConfig = new EFCore.BulkExtensions.BulkConfig();
             configuration.GetSection("BulkConfig").Bind(bulkConfig);
-
             services.AddSingleton(bulkConfig);
-
             services.AddSingleton<JournalBulkStore>(sp =>
             {
                 var logger = sp.GetRequiredService<ILogger>();
@@ -123,6 +125,8 @@ namespace Voyager
                 var logger = sp.GetRequiredService<ILogger>();
                 return new FailedBatchStore(() => sp.GetRequiredService<IDbContextFactory<OrionDbContext>>().CreateDbContext(), logger);
             });
+
+            services.AddSingleton<ReportGenerator, ReportGenerator>();
         }
     }
 }

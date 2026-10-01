@@ -84,7 +84,7 @@ namespace EDLogs
 
         private EDSystemName[] GetOrionNebulaSystems(string nebulaDirectory)
         {
-            _logger.Information("Import Orion Nebula systems from the csv files in the Spansh directory");
+            _logger.Information("Import Orion Nebula systems from the .csv files in the Spansh directory");
             if(!Directory.Exists(nebulaDirectory))
             {
                 _logger.Error("Spansh directory does not exist: {NebulaDirectory}. Please check the directory path.", nebulaDirectory);
@@ -103,6 +103,7 @@ namespace EDLogs
                     if (columns.Length >= 2)
                     {
                         var systemName = columns[0].Trim();
+                        systemName = systemName.Trim('"'); // Remove quotes if present  
                         systems.Add(new EDSystemName
                         {
                             Name = systemName
@@ -123,10 +124,6 @@ namespace EDLogs
                 return;
             }
 
-            var logFiles = Directory.GetFiles(_logPath, "*.log", SearchOption.AllDirectories);
-            _logger.Information("Found {LogCount} log files.", logFiles.Length);
-            var failedStore = _failedBatchStore;
-
             // Get the latest FSDJump event timestamp from the database to avoid re-importing old logs
             var latestFSDJumpTimestamp = await _dbContext.FSDJump
                 .AsNoTracking()
@@ -134,15 +131,32 @@ namespace EDLogs
                 .Select(f => (DateTime?)f.Timestamp)
                 .FirstOrDefaultAsync() ?? DateTime.MinValue;
 
-            // Filter log files to only include those modified after the latest FSDJump event timestamp
-            // TODO
-            logFiles = logFiles.Where(logFile => File.GetLastWriteTimeUtc(logFile) > latestFSDJumpTimestamp).ToArray();
+            var logFiles = 
+                Directory.GetFiles(_logPath, "*.log", SearchOption.AllDirectories)
+                .Where( f => File.GetLastWriteTimeUtc(f) > latestFSDJumpTimestamp)
+                .Skip(1)
+                .ToArray();
             _logger.Information("Filtered to {LogCount} log files after {LatestFSDJumpTimestamp}.", logFiles.Length, latestFSDJumpTimestamp);
-
+            var failedStore = _failedBatchStore;
             foreach (var logFile in logFiles)
             {
                 try
                 {
+                    // Skip files that were last modified at or before the latest FSDJump we already have
+                    try
+                    {
+                        var lastWriteUtc = File.GetLastWriteTimeUtc(logFile);
+                        if (latestFSDJumpTimestamp != DateTime.MinValue && lastWriteUtc <= latestFSDJumpTimestamp)
+                        {
+                            _logger.Information("Skipping log file (not modified since last FSDJump): {LogFile}", logFile);
+                            continue; // skip to next file
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Warning(ex, "Failed to determine last write time for {LogFile}; processing anyway", logFile);
+                    }
+
                     // Process using the high-throughput processor
                     var cts = new CancellationTokenSource();
                     Func<List<object>, Task> storeBatchAsync = batch => _bulkStore.StoreBatchAsync(batch, cts.Token);

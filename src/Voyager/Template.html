@@ -1,0 +1,196 @@
+<!--
+  Orion Report Template
+  Placeholders the generator replaces:
+    {{TOTAL_SYSTEMS}}   - total Orion Nebula systems
+    {{VISITED_SYSTEMS}} - systems with FSD jumps
+    {{TOTAL_JUMPS}}     - total FSD jump count
+    {{EARLIEST_JUMP}}   - earliest jump datetime
+    {{LATEST_JUMP}}     - latest jump datetime
+    {{PERCENT_COMPLETE}}- human-readable percent (e.g. 12.34%)
+    {{PERCENT_VALUE}}   - numeric percent (used for progress width)
+    {{SYSTEM_ROWS}}     - table rows for each system (HTML)
+    {{GENERATED_AT}}    - UTC generation timestamp
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Orion Nebula Report</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --muted: #64748b;
+            --accent1: #06b6d4;
+            --accent2: #0369a1
+        }
+
+        body {
+            font-family: Inter,Segoe UI,Roboto,Arial,sans-serif;
+            background: var(--bg);
+            color: #0f172a;
+            margin: 0;
+            padding: 28px
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+            border: 1px solid rgba(2,6,23,0.04)
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin: 0
+        }
+
+        .meta {
+            font-size: 0.9rem;
+            color: var(--muted)
+        }
+
+        .summary {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 12px 0
+        }
+
+            .summary .item {
+                flex: 1 1 180px;
+                padding: 12px;
+                border-radius: 8px;
+                background: linear-gradient(180deg,#fff,#fbfdff);
+                border: 1px solid #e6eef8
+            }
+
+        .item .value {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--accent2)
+        }
+
+        .item .label {
+            font-size: 0.85rem;
+            color: #475569
+        }
+
+        .progress {
+            height: 14px;
+            background: #eef2ff;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px
+        }
+
+            .progress > span {
+                display: block;
+                height: 100%;
+                background: linear-gradient(90deg,var(--accent1),var(--accent2));
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+            font-size: 0.95rem
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eef2f6
+        }
+
+        th {
+            background: #fbfdff;
+            font-weight: 600
+        }
+
+        tr:hover td {
+            background: #f8fafc
+        }
+
+        footer {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 0.85rem
+        }
+
+        @media (max-width:720px) {
+            .summary {
+                flex-direction: column
+            }
+
+            .item {
+                flex: 1 1 auto
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <header>
+                <div>
+                    <h1>Orion Nebula — Exploration Summary</h1>
+                    <div class="meta">Systems and FSD jump activity report</div>
+                </div>
+                <div class="meta">Generated: {{GENERATED_AT}} UTC</div>
+            </header>
+
+            <section class="summary" aria-label="summary">
+                <div class="item">
+                    <div class="value">{{TOTAL_SYSTEMS}}</div>
+                    <div class="label">Total Orion Nebula systems</div>
+                </div>
+                <div class="item">
+                    <div class="value">{{VISITED_SYSTEMS}}</div>
+                    <div class="label">Systems with FSD jumps</div>
+                </div>
+                <div class="item">
+                    <div class="value">{{TOTAL_JUMPS}}</div>
+                    <div class="label">Total FSD jumps</div>
+                </div>
+                <div class="item">
+                    <div class="value">{{PERCENT_COMPLETE}}</div>
+                    <div class="label">Percent completion</div>
+                    <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span></div>
+                </div>
+            </section>
+
+            <section>
+                <h2 style="margin:0 0 8px 0">Systems detail</h2>
+                <div class="card" style="padding:0;margin-top:8px">
+                    <table role="table" aria-label="systems table">
+                        <thead>
+                            <tr><th>Star System</th><th>Jump Count</th><th>Earliest Jump</th><th>Latest Jump</th></tr>
+                        </thead>
+                        <tbody>
+                            {{SYSTEM_ROWS}}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer>Earliest jump: {{EARLIEST_JUMP}} — Latest jump: {{LATEST_JUMP}}</footer>
+        </div>
+    </div>
+</body>
+</html>
