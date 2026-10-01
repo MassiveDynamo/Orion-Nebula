@@ -1,15 +1,15 @@
-<!--
+﻿<!--
   Orion Report Template
   Placeholders the generator replaces:
-    {{TOTAL_SYSTEMS}}   - total Orion Nebula systems
-    {{VISITED_SYSTEMS}} - systems with FSD jumps
-    {{TOTAL_JUMPS}}     - total FSD jump count
-    {{EARLIEST_JUMP}}   - earliest jump datetime
-    {{LATEST_JUMP}}     - latest jump datetime
-    {{PERCENT_COMPLETE}}- human-readable percent (e.g. 12.34%)
-    {{PERCENT_VALUE}}   - numeric percent (used for progress width)
-    {{SYSTEM_ROWS}}     - table rows for each system (HTML)
-    {{GENERATED_AT}}    - UTC generation timestamp
+    1463   - total Orion Nebula systems
+    144 - systems with FSD jumps
+    189     - total FSD jump count
+    2023-01-18 12.26.31   - earliest jump datetime
+    2026-09-27 14.36.37     - latest jump datetime
+    9,84%- human-readable percent (e.g. 12.34%)
+    9,84   - numeric percent (used for progress width)
+    <tr><td>Haro 4-35</td><td>1</td><td>2023-01-18 12.26.31</td><td>2023-01-18 12.26.31</td></tr><tr><td>Running Man Sector CQ-Y d16</td><td>1</td><td>2023-01-18 12.27.28</td><td>2023-01-18 12.27.28</td></tr><tr><td>Walker</td><td>1</td><td>2023-12-14 17.21.40</td><td>2023-12-14 17.21.40</td></tr><tr><td>Feoktistov</td><td>1</td><td>2023-12-14 17.41.19</td><td>2023-12-14 17.41.19</td></tr><tr><td>Yngvi-Freyr</td><td>1</td><td>2023-12-14 18.15.05</td><td>2023-12-14 18.15.05</td></tr><tr><td>Labyrinth</td><td>11</td><td>2023-12-14 19.08.39</td><td>2025-12-16 20.05.45</td></tr><tr><td>Laplace</td><td>1</td><td>2023-12-15 12.57.32</td><td>2023-12-15 12.57.32</td></tr><tr><td>Eratosthenes</td><td>2</td><td>2023-12-15 13.16.28</td><td>2026-09-01 16.46.50</td></tr><tr><td>2MASS J05350270-0532249</td><td>2</td><td>2023-12-15 13.37.06</td><td>2026-09-01 16.45.31</td></tr><tr><td>2MASS J05351194-0529327</td><td>2</td><td>2023-12-15 13.38.42</td><td>2026-09-01 16.43.59</td></tr>     - table rows for each system (HTML)
+    2026-10-01 17.23.14    - UTC generation timestamp
 -->
 <!doctype html>
 <html lang="en">
@@ -168,26 +168,26 @@
                     <h1>Orion Nebula — Exploration Summary</h1>
                     <div class="meta">Systems and FSD jump activity report</div>
                 </div>
-                <div class="meta">Generated: {{GENERATED_AT}} UTC</div>
+                <div class="meta">Generated: 2026-10-01 17.23.14 UTC</div>
             </header>
 
             <section class="summary" aria-label="summary">
                 <div class="item">
-                    <div class="value">{{TOTAL_SYSTEMS}}</div>
+                    <div class="value">1463</div>
                     <div class="label">Total Orion Nebula systems</div>
                 </div>
                 <div class="item">
-                    <div class="value">{{VISITED_SYSTEMS}}</div>
+                    <div class="value">144</div>
                     <div class="label">Systems with FSD jumps</div>
                 </div>
                 <div class="item">
-                    <div class="value">{{TOTAL_JUMPS}}</div>
+                    <div class="value">189</div>
                     <div class="label">Total FSD jumps</div>
                 </div>
                 <div class="item">
-                    <div class="value">{{PERCENT_COMPLETE}}</div>
+                    <div class="value">9,84%</div>
                     <div class="label">Percent completion</div>
-                    <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span><span class="percent-label">{{PERCENT_COMPLETE}}</span></div>
+                    <div class="progress"><span style="width:9,84%"></span><span class="percent-label">9,84%</span></div>
                 </div>
             </section>
 
@@ -199,13 +199,13 @@
                             <tr><th>Star System</th><th>Jump Count</th><th>Earliest Jump</th><th>Latest Jump</th></tr>
                         </thead>
                         <tbody>
-                            {{SYSTEM_ROWS}}
+                            <tr><td>Haro 4-35</td><td>1</td><td>2023-01-18 12.26.31</td><td>2023-01-18 12.26.31</td></tr><tr><td>Running Man Sector CQ-Y d16</td><td>1</td><td>2023-01-18 12.27.28</td><td>2023-01-18 12.27.28</td></tr><tr><td>Walker</td><td>1</td><td>2023-12-14 17.21.40</td><td>2023-12-14 17.21.40</td></tr><tr><td>Feoktistov</td><td>1</td><td>2023-12-14 17.41.19</td><td>2023-12-14 17.41.19</td></tr><tr><td>Yngvi-Freyr</td><td>1</td><td>2023-12-14 18.15.05</td><td>2023-12-14 18.15.05</td></tr><tr><td>Labyrinth</td><td>11</td><td>2023-12-14 19.08.39</td><td>2025-12-16 20.05.45</td></tr><tr><td>Laplace</td><td>1</td><td>2023-12-15 12.57.32</td><td>2023-12-15 12.57.32</td></tr><tr><td>Eratosthenes</td><td>2</td><td>2023-12-15 13.16.28</td><td>2026-09-01 16.46.50</td></tr><tr><td>2MASS J05350270-0532249</td><td>2</td><td>2023-12-15 13.37.06</td><td>2026-09-01 16.45.31</td></tr><tr><td>2MASS J05351194-0529327</td><td>2</td><td>2023-12-15 13.38.42</td><td>2026-09-01 16.43.59</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <footer>Earliest jump: {{EARLIEST_JUMP}} — Latest jump: {{LATEST_JUMP}}</footer>
+            <footer>Earliest jump: 2023-01-18 12.26.31 — Latest jump: 2026-09-27 14.36.37</footer>
         </div>
     </div>
 </body>

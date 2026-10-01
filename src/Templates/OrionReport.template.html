@@ -29,8 +29,9 @@
     .summary .item{flex:1 1 180px;padding:12px;border-radius:8px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid #e6eef8}
     .item .value{font-weight:700;font-size:1.5rem;color:var(--accent2)}
     .item .label{font-size:0.85rem;color:#475569}
-    .progress{height:14px;background:#eef2ff;border-radius:999px;overflow:hidden;margin-top:8px}
-    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));}
+    .progress{position:relative;height:18px;background:linear-gradient(180deg,#f7feff,#eefcff);border-radius:12px;overflow:hidden;margin-top:8px;border:1px solid #d0e9f7;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 420ms ease-in-out;box-shadow:inset 0 -3px 6px rgba(3,25,34,0.06)}
+    .progress .percent-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:0.82rem;color:#04374a;font-weight:700;pointer-events:none}
     table{width:100%;border-collapse:collapse;margin-top:18px;font-size:0.95rem}
     th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #eef2f6}
     th{background:#fbfdff;font-weight:600}
@@ -66,7 +67,7 @@
         <div class="item">
           <div class="value">{{PERCENT_COMPLETE}}</div>
           <div class="label">Percent completion</div>
-          <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span></div>
+          <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span><span class="percent-label">{{PERCENT_COMPLETE}}</span></div>
         </div>
       </section>
 
