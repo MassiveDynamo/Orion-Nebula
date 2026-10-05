@@ -57,7 +57,7 @@ namespace Voyager
             sb.Replace("{{GENERATED_AT}}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 
             // write file
-            var outPath = Path.Combine(dataFolder, "OrionReport.html");
+            var outPath = Path.Combine(dataFolder, "index.html");
             File.WriteAllText(outPath, sb.ToString(), Encoding.UTF8);
             logger.Information("Wrote report to {ReportPath}", outPath);
         }
