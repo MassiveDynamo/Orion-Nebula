@@ -1,15 +1,16 @@
 <!--
   Orion Report Template
   Placeholders the generator replaces:
-    {{TOTAL_SYSTEMS}}   - total Orion Nebula systems
-    {{VISITED_SYSTEMS}} - systems with FSD jumps
-    {{TOTAL_JUMPS}}     - total FSD jump count
-    {{EARLIEST_JUMP}}   - earliest jump datetime
-    {{LATEST_JUMP}}     - latest jump datetime
-    {{PERCENT_COMPLETE}}- human-readable percent (e.g. 12.34%)
-    {{PERCENT_VALUE}}   - numeric percent (used for progress width)
-    {{SYSTEM_ROWS}}     - table rows for each system (HTML)
-    {{GENERATED_AT}}    - UTC generation timestamp
+    {{TOTAL_SYSTEMS}}      - total Orion Nebula systems
+    {{TOTAL_BELT_CLUSTERS}}- total belt clusters in the nebula
+    {{VISITED_SYSTEMS}}    - systems with FSD jumps
+    {{TOTAL_JUMPS}}        - total FSD jump count
+    {{EARLIEST_JUMP}}      - earliest jump datetime
+    {{LATEST_JUMP}}        - latest jump datetime
+    {{PERCENT_COMPLETE}}   - human-readable percent (e.g. 12.34%)
+    {{PERCENT_VALUE}}      - numeric percent (used for progress width)
+    {{SYSTEM_ROWS}}        - table rows for each system (HTML)
+    {{GENERATED_AT}}       - UTC generation timestamp
 -->
 <!doctype html>
 <html lang="en">
@@ -165,7 +166,7 @@
         <div class="card">
             <header>
                 <div>
-                    <h1>Orion Nebula — Exploration Summary</h1>
+                    <h1><a href="#mo">Orion Nebula — Exploration Summary</a></h1>
                     <div class="meta">Systems and FSD jump activity report</div>
                 </div>
                 <div class="meta">Generated: {{GENERATED_AT}} UTC</div>
@@ -174,7 +175,11 @@
             <section class="summary" aria-label="summary">
                 <div class="item">
                     <div class="value">{{TOTAL_SYSTEMS}}</div>
-                    <div class="label"><a href="https://www.spansh.co.uk/systems/search/F68FE71A-B5DD-11F1-AB6F-C5F268889FC4/1" title="Orion Nebula systems">Orion Nebula systems</a></div>
+                    <div class="label"><a href="https://www.spansh.co.uk/systems/search/F68FE71A-B5DD-11F1-AB6F-C5F268889FC4/1" title="Orion Nebula systems">Orion Nebula systems</a><br/>(duplicated spansh entries removed))</div>
+                </div>
+                <div class="item">
+                    <div class="value">{{TOTAL_BELT_CLUSTERS}}</div>
+                    <div class="label">Belt clusters in the Orion Nebula</div>
                 </div>
                 <div class="item">
                     <div class="value">{{VISITED_SYSTEMS}}</div>
@@ -203,6 +208,19 @@
                         </tbody>
                     </table>
                 </div>
+            </section>
+
+            <section>
+                <h2>Exploration Procedures</h2>
+                <div id="mo">Upon entering a new star system, the following steps are taken:</div>
+                <ul>
+                    <li>Full FSS scan</li>
+                    <li>Visit all belt clusters</li>
+                    <li>Make first footfall</li>
+                    <li>Flyby 8th moon</li>
+                    <li>Drop random TOHF's</li>
+                    <li>Fire Discovery scanner randomly</li>
+                </ul>
             </section>
 
             <footer>Earliest jump: {{EARLIEST_JUMP}} — Latest jump: {{LATEST_JUMP}}</footer>
