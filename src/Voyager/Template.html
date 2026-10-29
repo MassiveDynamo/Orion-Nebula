@@ -174,13 +174,18 @@
 
             <section class="summary" aria-label="summary">
                 <div class="item">
-                    <div class="value">{{TOTAL_SYSTEMS}}</div>
-                    <div class="label"><a href="https://www.spansh.co.uk/systems/search/F68FE71A-B5DD-11F1-AB6F-C5F268889FC4/1" title="Orion Nebula systems">Orion Nebula systems</a><br/>(duplicated spansh entries removed))</div>
+                    <div class="value">{{PERCENT_COMPLETE}}</div>
+                    <div class="label">Percent completion</div>
+                    <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span><span class="percent-label">{{PERCENT_COMPLETE}}</span></div>
                 </div>
                 <div class="item">
-                    <div class="value">{{TOTAL_BELT_CLUSTERS}}</div>
-                    <div class="label">Belt clusters in the Orion Nebula</div>
+                    <div class="value">{{TOTAL_SYSTEMS}}</div>
+                    <div class="label"><a href="https://www.spansh.co.uk/systems/search/F68FE71A-B5DD-11F1-AB6F-C5F268889FC4/1" title="Orion Nebula systems">Orion Nebula systems</a><br />(duplicated spansh entries removed))</div>
                 </div>
+                <!-- div class="item">
+                    <div class="value">{{TOTAL_BELT_CLUSTERS}}</div>
+                    <div class="label">Belt clusters visited in the Orion Nebula</div>
+                </-->
                 <div class="item">
                     <div class="value">{{VISITED_SYSTEMS}}</div>
                     <div class="label">Systems with FSD jumps</div>
@@ -188,11 +193,6 @@
                 <div class="item">
                     <div class="value">{{TOTAL_JUMPS}}</div>
                     <div class="label">Total FSD jumps</div>
-                </div>
-                <div class="item">
-                    <div class="value">{{PERCENT_COMPLETE}}</div>
-                    <div class="label">Percent completion</div>
-                    <div class="progress"><span style="width:{{PERCENT_VALUE}}%"></span><span class="percent-label">{{PERCENT_COMPLETE}}</span></div>
                 </div>
             </section>
 

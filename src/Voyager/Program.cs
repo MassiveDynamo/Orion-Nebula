@@ -46,7 +46,7 @@ namespace Voyager
                 else
                 {
                     logger.Error("DbContext is not connected");
-                    return 1;
+                    // return 1;
                 }
             }
             catch (Exception ex)

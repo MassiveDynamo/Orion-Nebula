@@ -195,6 +195,39 @@ namespace Data.Journal
                         return null;
                     }
 
+                case "SupercruiseExit":
+                    try
+                    {
+                        var model = JsonSerializer.Deserialize<SupercruiseExit>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        return model;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
+                case "ProspectedAsteroid":
+                    try
+                    {
+                        var model = JsonSerializer.Deserialize<ProspectedAsteroid>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        return model;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
+                case "MiningRefined":
+                    try
+                    {
+                        var model = JsonSerializer.Deserialize<MiningRefined>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        return model;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+
                 default:
                     return null;
             }

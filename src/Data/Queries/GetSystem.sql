@@ -1,0 +1,1 @@
+﻿select * from [dbo].[EDSystemName] where [Name] = 'V564 Orionis'

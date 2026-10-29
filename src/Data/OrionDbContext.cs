@@ -23,6 +23,15 @@ namespace Data
         // FSS All Bodies Found event entries
         public DbSet<Data.Models.FSSAllBodiesFound> FSSAllBodiesFound { get; set; }
 
+        // Supercruise Exit event entries
+        public DbSet<Data.Models.SupercruiseExit> SupercruiseExit { get; set; }
+
+        // Prospected Asteroid event entries (mining/resource gathering)
+        public DbSet<Data.Models.ProspectedAsteroid> ProspectedAsteroid { get; set; }
+
+        // Mining Refined event entries
+        public DbSet<Data.Models.MiningRefined> MiningRefined { get; set; }
+
         // Failed batches persisted for replay and debugging
         public DbSet<Data.Models.FailedBatch> FailedBatch { get; set; }
 
@@ -55,7 +64,14 @@ namespace Data
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlServer(ConnectionString);
+        {
+            // Only configure SQL Server if no provider has been configured yet
+            // This allows tests to inject their own database provider (e.g., SQLite)
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(ConnectionString);
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

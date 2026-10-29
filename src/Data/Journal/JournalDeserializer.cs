@@ -16,6 +16,9 @@ namespace Data.Journal
         {
             ["FSDJump"] = typeof(FSDJump),
             ["FSSAllBodiesFound"] = typeof(FSSAllBodiesFound),
+            ["SupercruiseExit"] = typeof(SupercruiseExit),
+            ["ProspectedAsteroid"] = typeof(ProspectedAsteroid),
+            ["MiningRefined"] = typeof(MiningRefined),
             // Add additional mappings as you add models
         };
 
