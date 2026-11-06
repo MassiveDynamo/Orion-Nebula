@@ -32,8 +32,7 @@ namespace Data
         // Mining Refined event entries
         public DbSet<Data.Models.MiningRefined> MiningRefined { get; set; }
 
-        // Failed batches persisted for replay and debugging
-        public DbSet<Data.Models.FailedBatch> FailedBatch { get; set; }
+        public DbSet<Data.Models.StarSystem> StarSystem { get; set; }
 
         public OrionDbContext() : base()
         {
@@ -75,6 +74,33 @@ namespace Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Fluent API configuration for EDSystemName
+            modelBuilder.Entity<EDSystemName>(entity =>
+            {
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+            });
+
+            // Fluent API configuration for StarSystem
+            modelBuilder.Entity<StarSystem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+                entity.Property(e => e.X).HasColumnType("float");
+                entity.Property(e => e.Y).HasColumnType("float");
+                entity.Property(e => e.Z).HasColumnType("float");
+                entity.Property(e => e.Population).HasColumnType("bigint");
+                entity.Property(e => e.BodyCount).HasColumnType("int");
+                entity.Property(e => e.Date).HasColumnType("datetime2");
+                entity.HasIndex(e => e.Name).HasDatabaseName("IX_StarSystem_Name");
+            });
+
             // Fluent API configuration for FSDJump
             modelBuilder.Entity<FSDJump>(entity =>
             {
@@ -168,20 +194,59 @@ namespace Data
                 entity.HasIndex(e => e.SystemAddress).HasDatabaseName("IX_FSSAllBodiesFound_SystemAddress");
             });
 
-            // Fluent API for FailedBatch
-            modelBuilder.Entity<Data.Models.FailedBatch>(entity =>
+            // Fluent API configuration for SupercruiseExit
+            modelBuilder.Entity<SupercruiseExit>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Timestamp).HasColumnType("datetime2");
-                entity.Property(e => e.SourceFile).HasMaxLength(260).HasColumnType("nvarchar(260)");
-                entity.Property(e => e.ErrorType).HasMaxLength(200).HasColumnType("nvarchar(200)");
-                entity.Property(e => e.ErrorMessage).HasColumnType("nvarchar(max)");
-                entity.Property(e => e.ItemCount).HasColumnType("int");
-                entity.Property(e => e.RawPayload).HasColumnType("nvarchar(max)");
-                entity.Property(e => e.Status).HasMaxLength(50).HasColumnType("nvarchar(50)");
-                entity.Property(e => e.ReplayAttempts).HasColumnType("int");
-                entity.Property(e => e.ReplayedAt).HasColumnType("datetime2");
-                entity.HasIndex(e => e.Timestamp).HasDatabaseName("IX_FailedBatch_Timestamp");
+                entity.Property(e => e.Timestamp)
+                    .HasColumnType("datetime2");
+                entity.Property(e => e.Event)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+                entity.Property(e => e.StarSystem)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+                entity.Property(e => e.SystemAddress)
+                    .HasColumnType("bigint");
+                entity.Property(e => e.Body)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+                entity.Property(e => e.BodyID).HasColumnType("int");
+                entity.Property(e => e.BodyType)
+                    .HasMaxLength(50)
+                    .HasColumnType("nvarchar(50)");
+                entity.Property(e => e.Taxi).HasColumnType("bit");
+                entity.Property(e => e.Multicrew).HasColumnType("bit");
+                entity.HasIndex(e => e.StarSystem).HasDatabaseName("IX_SupercruiseExit_StarSystem");
+                entity.HasIndex(e => e.SystemAddress).HasDatabaseName("IX_SupercruiseExit_SystemAddress");
+            });
+
+            // Fluent API configuration for ProspectedAsteroid
+            modelBuilder.Entity<ProspectedAsteroid>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Timestamp)
+                    .HasColumnType("datetime2");
+                entity.Property(e => e.Event)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
+                entity.Property(e => e.Materials).HasColumnType("nvarchar(max)");
+            });
+
+            // Fluent API configuration for MiningRefined
+            modelBuilder.Entity<MiningRefined>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Timestamp)
+                    .HasColumnType("datetime2");
+                entity.Property(e => e.Event)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("nvarchar(200)");
             });
             OnModelCreatingPartial(modelBuilder);
         }

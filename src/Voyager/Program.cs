@@ -69,9 +69,9 @@ namespace Voyager
                 }
 
                 var bulkStore = serviceProvider.GetRequiredService<Data.Journal.JournalBulkStore>();
-                var failedStore = serviceProvider.GetRequiredService<Data.Journal.FailedBatchStore>();
-                var importer = new EDLogs.Importer(logger, appSettings, dbContext, bulkStore, failedStore);
+                var importer = new EDLogs.Importer(logger, appSettings, dbContext, bulkStore);
                 importer.ImportOrionNebulaSystems();
+                importer.ImportSystems("D:\\data\\spansh\\nebula_star_systems_by_id.csv");
                 importer.ImportLogsAsync().GetAwaiter().GetResult();
 
                 // Create a HTML report showing the current progress of visited systems vs the total number of systems in the Orion Nebula
@@ -117,13 +117,6 @@ namespace Voyager
                     BulkConfig = sp.GetRequiredService<EFCore.BulkExtensions.BulkConfig>()
                 };
                 return store;
-            });
-
-            // Register FailedBatchStore with DI so the importer can persist failed batches to DB and disk
-            services.AddSingleton<FailedBatchStore>(sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger>();
-                return new FailedBatchStore(() => sp.GetRequiredService<IDbContextFactory<OrionDbContext>>().CreateDbContext(), logger);
             });
 
             services.AddSingleton<ReportGenerator, ReportGenerator>();

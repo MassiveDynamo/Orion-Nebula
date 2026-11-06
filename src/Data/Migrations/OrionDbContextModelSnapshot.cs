@@ -178,57 +178,6 @@ namespace Data.Migrations
                     b.ToTable("FSSAllBodiesFound");
                 });
 
-            modelBuilder.Entity("Data.Models.FailedBatch", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("ErrorMessage")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ErrorType")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ItemCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RawPayload")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReplayAttempts")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ReplayedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SourceFile")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("nvarchar(260)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Timestamp")
-                        .HasDatabaseName("IX_FailedBatch_Timestamp");
-
-                    b.ToTable("FailedBatch");
-                });
-
             modelBuilder.Entity("Data.Models.MiningRefined", b =>
                 {
                     b.Property<long>("Id")
@@ -239,8 +188,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Event")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -276,8 +225,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Event")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Materials")
                         .HasColumnType("nvarchar(max)");
@@ -295,6 +244,42 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProspectedAsteroid");
+                });
+
+            modelBuilder.Entity("Data.Models.StarSystem", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("BodyCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long?>("Population")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("X")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Z")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_StarSystem_Name");
+
+                    b.ToTable("StarSystem");
                 });
 
             modelBuilder.Entity("Data.Models.SupercruiseExit", b =>
@@ -341,9 +326,11 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StarSystem");
+                    b.HasIndex("StarSystem")
+                        .HasDatabaseName("IX_SupercruiseExit_StarSystem");
 
-                    b.HasIndex("SystemAddress");
+                    b.HasIndex("SystemAddress")
+                        .HasDatabaseName("IX_SupercruiseExit_SystemAddress");
 
                     b.ToTable("SupercruiseExit");
                 });

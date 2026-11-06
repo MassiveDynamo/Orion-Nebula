@@ -11,7 +11,6 @@ namespace Tools
         public static async Task ReplayFromDatabaseAsync(Func<OrionDbContext> contextFactory, Func<System.Collections.Generic.List<object>, Task> handleBatchAsync, int batchSize = 500, bool markReplayed = true)
         {
             using var ctx = contextFactory();
-            var batches = await ctx.FailedBatch.Where(f => f.Status != "Replayed").OrderBy(f => f.Timestamp).ToListAsync().ConfigureAwait(false);
             foreach (var b in batches)
             {
                 var lines = b.RawPayload.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);

@@ -12,33 +12,26 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(OrionDbContext))]
-    [Migration("20260926110609_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20261106195826_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Data.Models.EDSystemName", b =>
                 {
-                    b.Property<long>("Id64")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id64"));
-
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.HasKey("Id64");
+                    b.HasKey("Name");
 
                     b.ToTable("EDSystemName");
                 });
@@ -89,10 +82,6 @@ namespace Data.Migrations
                     b.Property<string>("Powers")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("RawJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ReserveLevel")
                         .HasColumnType("int");
@@ -167,12 +156,162 @@ namespace Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("RawJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double?>("ScanTime")
                         .HasColumnType("float");
+
+                    b.Property<long?>("SystemAddress")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("SystemName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SystemAddress")
+                        .HasDatabaseName("IX_FSSAllBodiesFound_SystemAddress");
+
+                    b.HasIndex("SystemName")
+                        .HasDatabaseName("IX_FSSAllBodiesFound_SystemName");
+
+                    b.ToTable("FSSAllBodiesFound");
+                });
+
+            modelBuilder.Entity("Data.Models.MiningRefined", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Event")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Type_Localised")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MiningRefined");
+                });
+
+            modelBuilder.Entity("Data.Models.ProspectedAsteroid", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Content_Localised")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Event")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Materials")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherlodeMaterial")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<double?>("Remaining")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProspectedAsteroid");
+                });
+
+            modelBuilder.Entity("Data.Models.StarSystem", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("BodyCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<long?>("Population")
+                        .HasColumnType("bigint");
+
+                    b.Property<double>("X")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Z")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_StarSystem_Name");
+
+                    b.ToTable("StarSystem");
+                });
+
+            modelBuilder.Entity("Data.Models.SupercruiseExit", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("BodyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BodyType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Event")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool?>("Multicrew")
+                        .HasColumnType("bit");
 
                     b.Property<string>("StarSystem")
                         .IsRequired()
@@ -182,18 +321,21 @@ namespace Data.Migrations
                     b.Property<long?>("SystemAddress")
                         .HasColumnType("bigint");
 
+                    b.Property<bool?>("Taxi")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("StarSystem")
-                        .HasDatabaseName("IX_FSSAllBodiesFound_StarSystem");
+                        .HasDatabaseName("IX_SupercruiseExit_StarSystem");
 
                     b.HasIndex("SystemAddress")
-                        .HasDatabaseName("IX_FSSAllBodiesFound_SystemAddress");
+                        .HasDatabaseName("IX_SupercruiseExit_SystemAddress");
 
-                    b.ToTable("FSSAllBodiesFound");
+                    b.ToTable("SupercruiseExit");
                 });
 #pragma warning restore 612, 618
         }

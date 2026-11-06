@@ -14,16 +14,14 @@ namespace EDLogs
         private ILogger _logger;
         private readonly OrionDbContext _dbContext;
         private readonly JournalBulkStore _bulkStore;
-        private readonly FailedBatchStore _failedBatchStore;
 
-        public Importer(ILogger logger, AppSettings.Settings appSettings, OrionDbContext dbContext, JournalBulkStore bulkStore, FailedBatchStore failedBatchStore)
+        public Importer(ILogger logger, AppSettings.Settings appSettings, OrionDbContext dbContext, JournalBulkStore bulkStore)
         {
             _logPath = Environment.GetEnvironmentVariable("USERPROFILE") + @"\Saved Games\Frontier Developments\Elite Dangerous";
             _appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _bulkStore = bulkStore ?? throw new ArgumentNullException(nameof(bulkStore));
-            _failedBatchStore = failedBatchStore ?? throw new ArgumentNullException(nameof(failedBatchStore));
         }
 
         public void ImportOrionNebulaSystems()
@@ -82,6 +80,63 @@ namespace EDLogs
             }
         }
 
+        public List<StarSystem> ImportSystems(string systemsToImport)
+        {
+            var sw = Stopwatch.StartNew();
+            _logger.Information("Import Orion Nebula systems from the .csv file {OrionNebulaImportFile}", systemsToImport);
+            if(!File.Exists(systemsToImport))
+            {
+                _logger.Error("Orion Nebula import file does not exist: {OrionNebulaImportFile}. Please check the file path.", systemsToImport);
+                return new List<StarSystem>();
+            }
+
+            // Get row count from the StarSystem table to avoid re-importing existing systems
+            var existingSystemCount = _dbContext.StarSystem.Count();
+            if(existingSystemCount > 0)
+            {
+                _logger.Information("StarSystem table already contains {ExistingSystemCount} systems. Skipping import.", existingSystemCount);
+                return new List<StarSystem>();
+            }
+
+            var systems = new List<StarSystem>();
+            var lines = File.ReadAllLines(systemsToImport);
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var columns = lines[i].Split(';');
+                if (columns.Length >= 7)
+                {
+                    var id = columns[0].Trim();
+                    var systemName = columns[1].Trim();
+                    systemName = systemName.Trim('"'); // Remove quotes if present  
+                    var parsedX = double.TryParse(columns[2], out double x);
+                    var parsedY = double.TryParse(columns[3], out double y);
+                    var parsedZ = double.TryParse(columns[4], out double z);
+                    var parsedPopulation = int.TryParse(columns[5], out int population);
+                    var parsedBodyCount = int.TryParse(columns[6], out int bodyCount);
+                    var parsedDate = DateTime.TryParse(columns[7], out DateTime date);
+                    systems.Add(new StarSystem
+                    {
+                        Id = long.TryParse(id, out long parsedId) ? parsedId : 0,
+                        Name = systemName,
+                        X = x,
+                        Y = y,
+                        Z = z,
+                        Population = population,
+                        BodyCount = bodyCount,
+                        Date = date
+
+                    });
+                }
+            }
+
+            _dbContext.StarSystem.AddRange(systems);
+            _dbContext.SaveChanges();
+
+            sw.Stop();
+            _logger.Information("Orion Nebula import process completed in {ElapsedTime} ms.", sw.ElapsedMilliseconds);
+            return systems;
+        }
+
         private EDSystemName[] GetOrionNebulaSystems(string nebulaDirectory)
         {
             _logger.Information("Import Orion Nebula systems from the .csv files in the Spansh directory");
@@ -137,7 +192,6 @@ namespace EDLogs
                 .Skip(1)
                 .ToArray();
             _logger.Information("Filtered to {LogCount} log files after {LatestFSDJumpTimestamp}.", logFiles.Length, latestFSDJumpTimestamp);
-            var failedStore = _failedBatchStore;
             foreach (var logFile in logFiles)
             {
                 try
@@ -161,9 +215,6 @@ namespace EDLogs
                     var cts = new CancellationTokenSource();
                     Func<List<object>, Task> storeBatchAsync = batch => _bulkStore.StoreBatchAsync(batch, cts.Token);
 
-                    // failure handler writes failed batches to disk so import can continue
-                    Func<List<object>, Exception, string, Task> failureHandler = (batch, ex, source) => failedStore.SaveFailedBatchAsync(batch, ex, source);
-
                     // Expose worker and batch tuning via app settings if present
                     int workerCount = 0;
                     int batchSize = 0;
@@ -178,7 +229,7 @@ namespace EDLogs
 
                     var wc = workerCount > 0 ? workerCount : Environment.ProcessorCount;
                     var bs = batchSize > 0 ? batchSize : 1000;
-                    await JournalProcessor.ProcessFileAsync(logFile, storeBatchAsync, failureHandler, wc, bs);
+                    await JournalProcessor.ProcessFileAsync(logFile, storeBatchAsync, null, wc, bs);
                     _logger.Information("Imported log file: {LogFile}", logFile);
                 }
                 catch (Exception ex)
