@@ -70,7 +70,7 @@ namespace Voyager
 
                 var bulkStore = serviceProvider.GetRequiredService<Data.Journal.JournalBulkStore>();
                 var importer = new EDLogs.Importer(logger, appSettings, dbContext, bulkStore);
-                importer.ImportOrionNebulaSystems();
+                // importer.ImportOrionNebulaSystems();
                 importer.ImportSystems("D:\\data\\spansh\\nebula_star_systems_by_id.csv");
                 importer.ImportLogsAsync().GetAwaiter().GetResult();
 

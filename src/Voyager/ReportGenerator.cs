@@ -86,7 +86,7 @@ namespace Voyager
         /// <param name="dataFolder"></param>
         internal static void GenerateReport(ILogger logger, OrionDbContext dbContext, string dataFolder)
         {
-            var orionSystemCount = dbContext.EDSystemName.Count();
+            var orionSystemCount = dbContext.StarSystem.Count();
             logger.Information("Found {Count} Orion Nebula systems in the database.", orionSystemCount);
 
             // Select the FSDJump records that match the Orion Nebula systems using a join
