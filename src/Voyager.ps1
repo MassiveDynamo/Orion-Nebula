@@ -1,0 +1,2 @@
+D:\git\MassiveDynamo\Orion-Nebula\src\Voyager\bin\Release\net10.0\Voyager.exe
+start "C:\Users\gertg\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Visual Studio Code.lnk" D:\git\MassiveDynamo\massivedynamo.github.io

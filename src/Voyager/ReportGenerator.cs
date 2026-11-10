@@ -112,14 +112,14 @@ namespace Voyager
                 .ToList();
 
             // compute overall stats
-            var totalSystems = dbContext.EDSystemName.Count();
+            var totalSystems = orionSystemCount;
             var totalBeltClusters = latestFssScans.Sum(scan => CountBeltClusters(scan.Bodies));
             var visitedSystems = results.Count;
             var totalJumps = results.Sum(r => r.JumpCount);
             var earliestJump = results.Count > 0 ? results.Min(r => r.EarliestDate) : (DateTime?)null;
             var latestJump = results.Count > 0 ? results.Max(r => r.LatestDate) : (DateTime?)null;
             var percentComplete = totalSystems > 0 ? (double)visitedSystems / totalSystems * 100.0 : 0.0;
-            var oldestJump = results.OrderBy(r => r.EarliestDate).Take(10).Select(r => $"<tr><td>{r.StarSystem}</td><td>{r.JumpCount}</td><td>{r.EarliestDate:yyyy-MM-dd HH:mm:ss}</td><td>{r.LatestDate:yyyy-MM-dd HH:mm:ss}</td></tr>");
+            var oldestJump = results.OrderBy(r => r.EarliestDate).Take(5).Select(r => $"<tr><td>{r.StarSystem}</td><td>{r.JumpCount}</td><td>{r.EarliestDate:yyyy-MM-dd HH:mm:ss}</td><td>{r.LatestDate:yyyy-MM-dd HH:mm:ss}</td></tr>");
 
             // Load the template and replace the placeholders with the actual values from the query results.
             var sb = new StringBuilder();
